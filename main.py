@@ -2,6 +2,7 @@ from barnum import gen_data
 import random
 from dataclasses import dataclass
 from typing import Iterator,Iterable
+from search_functions import search_person_by_name, search_person_by_job_title, search
 
 def write_random_persons_to_file(filepath,n_persons):
     with open(filepath,"a", encoding="utf-8") as file:
@@ -39,15 +40,6 @@ def read_persons_from_file(filepath, batch_size=10)->Iterator[list[Person]]:
 
 
 
-def search_person_by_name(collection_of_persons: Iterable[Person], name:str) -> Person or None:
-    output = []
-
-    name = name.lower()
-    for person in collection_of_persons:
-        if person.name.lower() in name or name in person.name.lower():
-            output.append(person)
-    
-    return output
 
 
 
@@ -58,19 +50,28 @@ def search_person_by_name(collection_of_persons: Iterable[Person], name:str) -> 
 
 
 if __name__=="__main__":
+
     filepath = "persons.txt"
     
     write_random_persons_to_file(filepath)
     person_generator = read_persons_from_file(filepath)
+    print("1. Search by name\n",
+          "2. Search by job title\n")
     while True:
+
         try:
             batch_of_persons = next(person_generator)
         except StopIteration:
             print("No more persons in file")
 
-        name_to_search_for = input("Enter name to search for: ")
-        search_result = search_person_by_name(collection_of_persons=batch_of_persons,name=name_to_search_for)
+        if input("Enter: ") == "1":
+            name_to_search_for = input("Enter name to search for: ")
+            search_result = search_person_by_name(collection_of_persons=batch_of_persons,name=name_to_search_for)
         
+        if input("Enter: ") == "2":
+            job_title_to_search_for = input("Enter job title to search for: ")
+            search_result = search_person_by_job_title(collection_of_persons=batch_of_persons,job_title=job_title_to_search_for)
+
         if not search_result:
             continue
             
